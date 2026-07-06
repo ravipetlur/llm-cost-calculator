@@ -2,6 +2,8 @@
 
 Estimates the **per-minute cost of a voice bot call** across the LLM + STT + TTS stack, so customer quotes reflect actual unit economics instead of a rough top-down number.
 
+**Live demo:** https://ravipetlur.github.io/llm-cost-calculator/ (auto-deploys from `main` via GitHub Actions)
+
 ## Run it
 
 ```sh
