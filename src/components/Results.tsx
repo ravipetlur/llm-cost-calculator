@@ -1,5 +1,5 @@
 import type { CostBreakdown } from '../lib/calc'
-import { fmtNum, fmtUSD } from '../lib/calc'
+import { fmtINR, fmtNum, fmtUSD } from '../lib/calc'
 import type { Assumptions, LLMModel, STTModel, TTSModel } from '../types'
 import { Card } from './fields'
 
@@ -9,6 +9,7 @@ interface Props {
   stt: STTModel
   tts: TTSModel
   assumptions: Assumptions
+  usdInr: number
 }
 
 const SEGMENTS = [
@@ -18,7 +19,7 @@ const SEGMENTS = [
   { key: 'fixed', label: 'Fixed', color: 'bg-slate-400', text: 'text-slate-500' },
 ] as const
 
-export function Results({ breakdown: b, llm, stt, tts, assumptions: a }: Props) {
+export function Results({ breakdown: b, llm, stt, tts, assumptions: a, usdInr }: Props) {
   const costs: Record<(typeof SEGMENTS)[number]['key'], number> = {
     llm: b.llm.cost,
     stt: b.stt.cost,
@@ -33,16 +34,21 @@ export function Results({ breakdown: b, llm, stt, tts, assumptions: a }: Props) 
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
             <div className="text-sm font-medium text-slate-500">Estimated cost per minute</div>
-            <div className="mt-1 text-5xl font-bold tracking-tight text-slate-900">{fmtUSD(total)}</div>
+            <div className="mt-1 flex items-baseline gap-3">
+              <span className="text-5xl font-bold tracking-tight text-slate-900">{fmtUSD(total)}</span>
+              <span className="text-2xl font-semibold text-slate-400">({fmtINR(total, usdInr)})</span>
+            </div>
           </div>
           <div className="flex gap-8 text-right">
             <div>
               <div className="text-xs text-slate-400">per {a.callMinutes}-min call</div>
               <div className="text-xl font-semibold text-slate-700">{fmtUSD(total * a.callMinutes, 3)}</div>
+              <div className="text-xs text-slate-400">({fmtINR(total * a.callMinutes, usdInr)})</div>
             </div>
             <div>
               <div className="text-xs text-slate-400">per 1,000 minutes</div>
               <div className="text-xl font-semibold text-slate-700">{fmtUSD(total * 1000, 2)}</div>
+              <div className="text-xs text-slate-400">({fmtINR(total * 1000, usdInr)})</div>
             </div>
           </div>
         </div>
@@ -75,10 +81,13 @@ export function Results({ breakdown: b, llm, stt, tts, assumptions: a }: Props) 
           accent="text-indigo-600"
           name={`${llm.provider} · ${llm.name}`}
           cost={b.llm.cost}
+          usdInr={usdInr}
           rows={[
             ['LLM calls / min', String(b.llm.calls)],
             ['Input tokens / min', fmtNum(b.llm.tokensIn)],
             ['Output tokens / min', fmtNum(b.llm.tokensOut)],
+            ['Prefill cache hit', `${Math.round(b.llm.cacheApplied * 100)}%`],
+            ['Blended input rate', `$${b.llm.blendedInputPerM.toFixed(3)}/M`],
             ['Rate', `$${llm.inputPerM}/M in · $${llm.outputPerM}/M out`],
           ]}
         />
@@ -87,6 +96,7 @@ export function Results({ breakdown: b, llm, stt, tts, assumptions: a }: Props) 
           accent="text-emerald-600"
           name={`${stt.provider} · ${stt.name}`}
           cost={b.stt.cost}
+          usdInr={usdInr}
           rows={[
             ['Audio billed / min', `${b.stt.billedSeconds}s`],
             ['Rate', `$${stt.perMinute}/min`],
@@ -97,6 +107,7 @@ export function Results({ breakdown: b, llm, stt, tts, assumptions: a }: Props) 
           accent="text-amber-600"
           name={`${tts.provider} · ${tts.name}`}
           cost={b.tts.cost}
+          usdInr={usdInr}
           rows={[
             ['Characters / min', fmtNum(b.tts.totalChars)],
             ['Billed after cache', fmtNum(b.tts.billedChars)],
@@ -109,6 +120,7 @@ export function Results({ breakdown: b, llm, stt, tts, assumptions: a }: Props) 
           accent="text-slate-500"
           name="Telephony / infra / margin"
           cost={b.fixed}
+          usdInr={usdInr}
           rows={[['Added per minute', fmtUSD(b.fixed)]]}
         />
       </div>
@@ -121,12 +133,14 @@ function DetailCard({
   accent,
   name,
   cost,
+  usdInr,
   rows,
 }: {
   label: string
   accent: string
   name: string
   cost: number
+  usdInr: number
   rows: [string, string][]
 }) {
   return (
@@ -136,7 +150,10 @@ function DetailCard({
           <div className={`text-xs font-semibold tracking-wide uppercase ${accent}`}>{label}</div>
           <div className="mt-0.5 text-sm font-medium text-slate-800">{name}</div>
         </div>
-        <div className="text-lg font-bold text-slate-900">{fmtUSD(cost)}</div>
+        <div className="text-right">
+          <div className="text-lg font-bold text-slate-900">{fmtUSD(cost)}</div>
+          <div className="text-xs text-slate-400">({fmtINR(cost, usdInr)})</div>
+        </div>
       </div>
       <dl className="mt-3 space-y-1">
         {rows.map(([k, v]) => (

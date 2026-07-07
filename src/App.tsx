@@ -12,6 +12,7 @@ export default function App() {
   const [selection, setSelection] = useStoredState('selection', DEFAULT_SELECTION)
   const [assumptions, setAssumptions] = useStoredState('assumptions', DEFAULT_ASSUMPTIONS)
   const [overrides, setOverrides] = useStoredState<PriceOverrides>('overrides', EMPTY_OVERRIDES)
+  const [usdInr, setUsdInr] = useStoredState('usdInr', 88)
   const [settingsOpen, setSettingsOpen] = useState(false)
 
   // apply price overrides on top of list prices
@@ -65,7 +66,7 @@ export default function App() {
           assumptions={assumptions}
           onAssumptions={setAssumptions}
         />
-        <Results breakdown={breakdown} llm={llm} stt={stt} tts={tts} assumptions={assumptions} />
+        <Results breakdown={breakdown} llm={llm} stt={stt} tts={tts} assumptions={assumptions} usdInr={usdInr} />
       </main>
 
       <footer className="mx-auto max-w-6xl px-6 pb-8 text-[11px] text-slate-400">
@@ -78,6 +79,8 @@ export default function App() {
         onClose={() => setSettingsOpen(false)}
         overrides={overrides}
         onOverrides={setOverrides}
+        usdInr={usdInr}
+        onUsdInr={setUsdInr}
       />
     </div>
   )

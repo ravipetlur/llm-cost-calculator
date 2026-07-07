@@ -8,9 +8,11 @@ interface Props {
   onClose: () => void
   overrides: PriceOverrides
   onOverrides: (o: PriceOverrides) => void
+  usdInr: number
+  onUsdInr: (v: number) => void
 }
 
-export function SettingsPane({ open, onClose, overrides, onOverrides }: Props) {
+export function SettingsPane({ open, onClose, overrides, onOverrides, usdInr, onUsdInr }: Props) {
   const setLLM = (id: string, field: 'inputPerM' | 'outputPerM', v: number | undefined) => {
     const entry = { ...overrides.llm[id], [field]: v }
     const llm = { ...overrides.llm }
@@ -68,6 +70,27 @@ export function SettingsPane({ open, onClose, overrides, onOverrides }: Props) {
         </div>
 
         <div className="space-y-8 px-6 py-6">
+          <section>
+            <h3 className="mb-2 text-xs font-semibold tracking-wide text-slate-500 uppercase">Currency</h3>
+            <label className="flex items-center justify-between rounded-lg border border-slate-200 px-3 py-2.5">
+              <span>
+                <span className="block text-sm font-medium text-slate-800">USD → INR rate</span>
+                <span className="block text-[11px] text-slate-400">Display only — all list prices stay in USD</span>
+              </span>
+              <input
+                type="number"
+                className="w-24 rounded-md border border-slate-300 px-2 py-1 text-right text-sm text-slate-700 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                value={usdInr}
+                step={0.25}
+                min={1}
+                onChange={(e) => {
+                  const v = e.target.valueAsNumber
+                  if (!Number.isNaN(v) && v > 0) onUsdInr(v)
+                }}
+              />
+            </label>
+          </section>
+
           <section>
             <h3 className="mb-2 text-xs font-semibold tracking-wide text-slate-500 uppercase">
               LLM — $ per 1M tokens

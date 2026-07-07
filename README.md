@@ -23,12 +23,14 @@ Everything is normalized to **one minute of call**:
 
 | Component | Model | Defaults |
 |---|---|---|
-| LLM | bot turns × (input words + output words) × tokens/word × per-token rate | 5 calls/min, 2,500 words in / 500 words out per call, 1.33 tokens/word |
+| LLM | bot turns × (input words × blended rate + output words × output rate) × tokens/word — input rate blends the provider's cached-input price by the **prefill cache hit rate** | 5 calls/min, 2,500 words in / 500 words out per call, 1.33 tokens/word, 0% prefill cache |
 | STT | billed audio seconds ÷ 60 × per-minute rate | 60s (full call streamed) |
 | TTS | spoken seconds × chars/sec × (1 − cache hit rate) × per-char rate | 30s spoken, 15 chars/sec, 50% cache |
 | Fixed | flat $/min adder (telephony, infra, margin) | $0 |
 
-Every assumption is editable in the **Call assumptions** panel. The headline shows $/min, plus per-call and per-1,000-minute figures.
+Every assumption is editable in the **Call assumptions** panel. The headline shows $/min, plus per-call and per-1,000-minute figures — in USD with INR alongside (FX rate configurable in Settings, display-only).
+
+**Use-case presets** (India-focused: banking support, loan offers, EMI reminders, order status, telecom support, clinic bookings) set typical turns, word counts and both cache rates in one click; everything stays tweakable afterwards. Models with no published cached-input price (e.g. Groq's Qwen models) get no prefill discount, and the UI says so.
 
 ## Pricing data
 

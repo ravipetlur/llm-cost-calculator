@@ -55,6 +55,8 @@ export interface Assumptions {
   ttsCharsPerSecond: number
   /** Fraction of TTS served from cache and not billed (0–1) */
   ttsCacheHitRate: number
+  /** Fraction of LLM input tokens billed at the provider's cached-input rate (0–1) */
+  llmCacheHitRate: number
   /** Fixed $/min adder: telephony, infra, margin */
   fixedPerMin: number
   /** Average call length, used for the per-call figure */
@@ -88,6 +90,7 @@ export const DEFAULT_ASSUMPTIONS: Assumptions = {
   ttsSecondsPerMin: 30,
   ttsCharsPerSecond: 15,
   ttsCacheHitRate: 0.5,
+  llmCacheHitRate: 0,
   fixedPerMin: 0,
   callMinutes: 5,
 }

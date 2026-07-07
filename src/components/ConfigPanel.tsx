@@ -1,3 +1,4 @@
+import { USE_CASES } from '../data/useCases'
 import type { Assumptions, LLMModel, STTModel, TTSModel } from '../types'
 import { DEFAULT_ASSUMPTIONS } from '../types'
 import { Card, NumberField, SelectField } from './fields'
@@ -22,8 +23,43 @@ export function ConfigPanel({ llms, stts, ttss, llmId, sttId, ttsId, onSelect, a
   const stt = stts.find((m) => m.id === sttId)
   const tts = ttss.find((m) => m.id === ttsId)
 
+  const activeUseCase = USE_CASES.find((u) =>
+    Object.entries(u.patch).every(([k, v]) => a[k as keyof Assumptions] === v),
+  )?.id
+
   return (
     <div className="space-y-4">
+      <Card title="Use case">
+        <div className="grid grid-cols-2 gap-2">
+          {USE_CASES.map((u) => {
+            const active = u.id === activeUseCase
+            return (
+              <button
+                key={u.id}
+                onClick={() => onAssumptions({ ...a, ...u.patch })}
+                title={u.description}
+                className={`rounded-lg border px-2.5 py-2 text-left transition-colors ${
+                  active
+                    ? 'border-indigo-500 bg-indigo-50 ring-1 ring-indigo-500'
+                    : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50'
+                }`}
+              >
+                <div className="text-sm">
+                  {u.emoji}{' '}
+                  <span className={`font-medium ${active ? 'text-indigo-900' : 'text-slate-800'}`}>{u.name}</span>
+                </div>
+                <div className="mt-0.5 line-clamp-2 text-[11px] leading-tight text-slate-400">{u.description}</div>
+              </button>
+            )
+          })}
+        </div>
+        <p className="mt-2 text-[11px] text-slate-400">
+          {activeUseCase
+            ? 'Presets set turns, words and cache rates — tweak anything below.'
+            : 'Custom assumptions in effect — pick a preset to start from a typical call profile.'}
+        </p>
+      </Card>
+
       <Card title="Provider stack">
         <div className="space-y-4">
           <SelectField
@@ -50,24 +86,65 @@ export function ConfigPanel({ llms, stts, ttss, llmId, sttId, ttsId, onSelect, a
         </div>
       </Card>
 
-      <Card title="TTS caching">
-        <div className="flex items-center gap-3">
-          <input
-            type="range"
-            min={0}
-            max={100}
-            step={5}
-            value={Math.round(a.ttsCacheHitRate * 100)}
-            onChange={(e) => set({ ttsCacheHitRate: Number(e.target.value) / 100 })}
-            className="w-full accent-indigo-600"
-          />
-          <span className="w-12 text-right text-sm font-semibold text-slate-700">
-            {Math.round(a.ttsCacheHitRate * 100)}%
-          </span>
+      <Card title="Caching">
+        <div className="space-y-4">
+          <div>
+            <div className="mb-1 flex items-center justify-between">
+              <span className="text-xs font-medium text-slate-600">TTS cache hit rate</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <input
+                type="range"
+                min={0}
+                max={100}
+                step={5}
+                value={Math.round(a.ttsCacheHitRate * 100)}
+                onChange={(e) => set({ ttsCacheHitRate: Number(e.target.value) / 100 })}
+                className="w-full accent-indigo-600"
+              />
+              <span className="w-12 text-right text-sm font-semibold text-slate-700">
+                {Math.round(a.ttsCacheHitRate * 100)}%
+              </span>
+            </div>
+            <p className="mt-1 text-[11px] text-slate-400">
+              Share of bot speech served from cache (greetings, common phrases) — not billed by the TTS provider.
+            </p>
+          </div>
+
+          <div>
+            <div className="mb-1 flex items-center justify-between">
+              <span className="text-xs font-medium text-slate-600">LLM prefill cache hit rate</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <input
+                type="range"
+                min={0}
+                max={100}
+                step={5}
+                value={Math.round(a.llmCacheHitRate * 100)}
+                onChange={(e) => set({ llmCacheHitRate: Number(e.target.value) / 100 })}
+                className="w-full accent-indigo-600"
+              />
+              <span className="w-12 text-right text-sm font-semibold text-slate-700">
+                {Math.round(a.llmCacheHitRate * 100)}%
+              </span>
+            </div>
+            <p className="mt-1 text-[11px] text-slate-400">
+              {llm && llm.cachedInputPerM === undefined ? (
+                <span className="font-medium text-amber-600">
+                  {llm.name} publishes no cached-input price — this slider has no effect for it.
+                </span>
+              ) : (
+                <>
+                  Share of input tokens (system prompt, conversation history) billed at the provider's cached rate
+                  {llm?.cachedInputPerM !== undefined &&
+                    ` ($${llm.cachedInputPerM}/M vs $${llm.inputPerM}/M for ${llm.name})`}
+                  .
+                </>
+              )}
+            </p>
+          </div>
         </div>
-        <p className="mt-1.5 text-[11px] text-slate-400">
-          Share of bot speech served from cache (greetings, common phrases) — not billed by the TTS provider.
-        </p>
       </Card>
 
       <Card title="Fixed cost">
@@ -87,7 +164,14 @@ export function ConfigPanel({ llms, stts, ttss, llmId, sttId, ttsId, onSelect, a
         action={
           <button
             className="text-xs font-medium text-indigo-600 hover:text-indigo-800"
-            onClick={() => onAssumptions({ ...DEFAULT_ASSUMPTIONS, fixedPerMin: a.fixedPerMin, ttsCacheHitRate: a.ttsCacheHitRate })}
+            onClick={() =>
+              onAssumptions({
+                ...DEFAULT_ASSUMPTIONS,
+                fixedPerMin: a.fixedPerMin,
+                ttsCacheHitRate: a.ttsCacheHitRate,
+                llmCacheHitRate: a.llmCacheHitRate,
+              })
+            }
           >
             Reset
           </button>
