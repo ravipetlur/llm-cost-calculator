@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { AssumptionsCard } from './components/AssumptionsCard'
 import { ConfigPanel } from './components/ConfigPanel'
 import { Results } from './components/Results'
@@ -14,8 +14,14 @@ export default function App() {
   const [selection, setSelection] = useStoredState('selection', DEFAULT_SELECTION)
   const [assumptions, setAssumptions] = useStoredState('assumptions', DEFAULT_ASSUMPTIONS)
   const [overrides, setOverrides] = useStoredState<PriceOverrides>('overrides', EMPTY_OVERRIDES)
-  const [usdInr, setUsdInr] = useStoredState('usdInr', 88)
+  const [usdInr, setUsdInr] = useStoredState('usdInr', 95.3)
   const [settingsOpen, setSettingsOpen] = useState(false)
+
+  // migrate the stale pre-July-2026 default FX rate; only touches the old default, not custom values
+  useEffect(() => {
+    if (usdInr === 88) setUsdInr(95.3)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // apply price overrides on top of list prices
   const llms = LLM_MODELS.map((m) => ({ ...m, ...overrides.llm[m.id] }))

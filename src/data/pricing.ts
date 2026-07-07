@@ -14,8 +14,11 @@ import type { LLMModel, STTModel, TTSModel } from '../types'
  * (Google: 25 audio tokens/sec). Gemini STT rates are derived from
  * audio-input tokens (32 tokens/sec); transcript output tokens add
  * roughly $0.0001–0.002/min extra depending on the model.
+ *
+ * Sarvam quotes INR-native prices (kept in notes); USD figures are
+ * converted at 95.3 INR/USD (early-July 2026 spot).
  */
-export const PRICING_AS_OF = '2026-07-06'
+export const PRICING_AS_OF = '2026-07-07'
 
 export const LLM_MODELS: LLMModel[] = [
   // OpenAI — https://developers.openai.com/api/docs/pricing
@@ -56,6 +59,10 @@ export const LLM_MODELS: LLMModel[] = [
   // Groq — https://groq.com/pricing (both Qwen models are Preview on GroqCloud)
   { id: 'groq-qwen3-6-27b', preview: true, provider: 'Groq', name: 'Qwen 3.6 27B', inputPerM: 0.6, outputPerM: 3, notes: 'Preview model on GroqCloud; ~500 tok/s', sourceUrl: 'https://groq.com/pricing' },
   { id: 'groq-qwen3-32b', preview: true, provider: 'Groq', name: 'Qwen3 32B', inputPerM: 0.29, outputPerM: 0.59, notes: 'Preview model on GroqCloud', sourceUrl: 'https://groq.com/pricing' },
+
+  // Sarvam AI — https://www.sarvam.ai/api-pricing (INR-native, converted at 95.3)
+  { id: 'sarvam-105b', provider: 'Sarvam', name: 'Sarvam-105B', inputPerM: 0.042, outputPerM: 0.168, cachedInputPerM: 0.026, notes: '₹4 in / ₹16 out / ₹2.5 cached per 1M tokens; flagship', sourceUrl: 'https://www.sarvam.ai/api-pricing' },
+  { id: 'sarvam-30b', provider: 'Sarvam', name: 'Sarvam-30B', inputPerM: 0.026, outputPerM: 0.105, cachedInputPerM: 0.016, notes: '₹2.5 in / ₹10 out / ₹1.5 cached per 1M tokens', sourceUrl: 'https://www.sarvam.ai/api-pricing' },
 ]
 
 export const STT_MODELS: STTModel[] = [
@@ -87,6 +94,12 @@ export const STT_MODELS: STTModel[] = [
   { id: 'azure-fast-transcription', provider: 'Azure', name: 'Fast Transcription (file)', perMinute: 0.006, notes: '$0.36/hr; synchronous faster-than-realtime file transcription', sourceUrl: 'https://azure.microsoft.com/en-us/pricing/details/speech/' },
   { id: 'azure-batch-transcription', provider: 'Azure', name: 'Batch transcription', perMinute: 0.003, notes: '$0.18/hr; async batch of stored audio', sourceUrl: 'https://azure.microsoft.com/en-us/pricing/details/speech/' },
   { id: 'azure-custom-speech-realtime', provider: 'Azure', name: 'Custom Speech (realtime)', perMinute: 0.02, notes: '$1.20/hr + endpoint hosting ~$1.29/day', sourceUrl: 'https://azure.microsoft.com/en-us/pricing/details/speech/' },
+
+  // Sarvam AI — endpoint-priced ₹30/hr regardless of model; billed per second
+  { id: 'sarvam-saaras-v3', provider: 'Sarvam', name: 'Saaras v3 (STT)', perMinute: 0.0052, notes: '₹30/hr billed per second; same price for streaming and batch', sourceUrl: 'https://www.sarvam.ai/api-pricing' },
+  { id: 'sarvam-saarika-v2-5', provider: 'Sarvam', name: 'Saarika v2.5 (STT, legacy)', perMinute: 0.0052, notes: '₹30/hr; same endpoint price as Saaras v3', sourceUrl: 'https://docs.sarvam.ai/api-reference-docs/speech-to-text/transcribe' },
+  { id: 'sarvam-stt-diarization', provider: 'Sarvam', name: 'STT + Diarization', perMinute: 0.0079, notes: '₹45/hr (+₹15/hr for speaker identification)', sourceUrl: 'https://www.sarvam.ai/api-pricing' },
+  { id: 'sarvam-saaras-translate', provider: 'Sarvam', name: 'Saaras STT-translate', perMinute: 0.0052, notes: '₹30/hr; transcribe + translate in one call', sourceUrl: 'https://www.sarvam.ai/api-pricing' },
 ]
 
 export const TTS_MODELS: TTSModel[] = [
@@ -117,6 +130,10 @@ export const TTS_MODELS: TTSModel[] = [
   { id: 'google-cloud-tts-polyglot', provider: 'Google Cloud', name: 'Polyglot voices', per1kChars: 0.016, preview: true, notes: 'Same $16/1M rate as Neural2', sourceUrl: 'https://cloud.google.com/text-to-speech/pricing' },
   { id: 'google-cloud-tts-wavenet', provider: 'Google Cloud', name: 'WaveNet voices (legacy)', per1kChars: 0.004, notes: '$4/1M chars; free tier 4M chars/mo', sourceUrl: 'https://cloud.google.com/text-to-speech/pricing' },
   { id: 'google-cloud-tts-standard', provider: 'Google Cloud', name: 'Standard voices (legacy)', per1kChars: 0.004, notes: '$4/1M chars; cheapest Google TTS; free tier 4M chars/mo', sourceUrl: 'https://cloud.google.com/text-to-speech/pricing' },
+
+  // Sarvam AI — INR-native, converted at 95.3
+  { id: 'sarvam-bulbul-v2', provider: 'Sarvam', name: 'Bulbul v2', per1kChars: 0.0157, notes: '₹15/10k chars; REST + WebSocket streaming at the same price', sourceUrl: 'https://www.sarvam.ai/api-pricing' },
+  { id: 'sarvam-bulbul-v3', provider: 'Sarvam', name: 'Bulbul v3', per1kChars: 0.0315, preview: true, notes: '₹30/10k chars, beta pricing; 11 Indian languages', sourceUrl: 'https://docs.sarvam.ai/api-reference-docs/pricing' },
 ]
 
 export const DEFAULT_SELECTION = {
