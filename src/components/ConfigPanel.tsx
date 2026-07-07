@@ -1,6 +1,4 @@
-import { USE_CASES } from '../data/useCases'
 import type { Assumptions, LLMModel, STTModel, TTSModel } from '../types'
-import { DEFAULT_ASSUMPTIONS } from '../types'
 import { Card, NumberField, SelectField } from './fields'
 
 interface Props {
@@ -23,43 +21,8 @@ export function ConfigPanel({ llms, stts, ttss, llmId, sttId, ttsId, onSelect, a
   const stt = stts.find((m) => m.id === sttId)
   const tts = ttss.find((m) => m.id === ttsId)
 
-  const activeUseCase = USE_CASES.find((u) =>
-    Object.entries(u.patch).every(([k, v]) => a[k as keyof Assumptions] === v),
-  )?.id
-
   return (
     <div className="space-y-4">
-      <Card title="Use case">
-        <div className="grid grid-cols-2 gap-2">
-          {USE_CASES.map((u) => {
-            const active = u.id === activeUseCase
-            return (
-              <button
-                key={u.id}
-                onClick={() => onAssumptions({ ...a, ...u.patch })}
-                title={u.description}
-                className={`rounded-lg border px-2.5 py-2 text-left transition-colors ${
-                  active
-                    ? 'border-indigo-500 bg-indigo-50 ring-1 ring-indigo-500'
-                    : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50'
-                }`}
-              >
-                <div className="text-sm">
-                  {u.emoji}{' '}
-                  <span className={`font-medium ${active ? 'text-indigo-900' : 'text-slate-800'}`}>{u.name}</span>
-                </div>
-                <div className="mt-0.5 line-clamp-2 text-[11px] leading-tight text-slate-400">{u.description}</div>
-              </button>
-            )
-          })}
-        </div>
-        <p className="mt-2 text-[11px] text-slate-400">
-          {activeUseCase
-            ? 'Presets set turns, words and cache rates — tweak anything below.'
-            : 'Custom assumptions in effect — pick a preset to start from a typical call profile.'}
-        </p>
-      </Card>
-
       <Card title="Provider stack">
         <div className="space-y-4">
           <SelectField
@@ -157,37 +120,6 @@ export function ConfigPanel({ llms, stts, ttss, llmId, sttId, ttsId, onSelect, a
           suffix="/min"
           hint="Telephony, infra, margin — added on top of the AI stack."
         />
-      </Card>
-
-      <Card
-        title="Call assumptions"
-        action={
-          <button
-            className="text-xs font-medium text-indigo-600 hover:text-indigo-800"
-            onClick={() =>
-              onAssumptions({
-                ...DEFAULT_ASSUMPTIONS,
-                fixedPerMin: a.fixedPerMin,
-                ttsCacheHitRate: a.ttsCacheHitRate,
-                llmCacheHitRate: a.llmCacheHitRate,
-              })
-            }
-          >
-            Reset
-          </button>
-        }
-      >
-        <div className="grid grid-cols-2 gap-3">
-          <NumberField label="Bot turns / min" value={a.botTurns} onChange={(v) => set({ botTurns: v })} />
-          <NumberField label="User turns / min" value={a.userTurns} onChange={(v) => set({ userTurns: v })} />
-          <NumberField label="Input words / LLM call" value={a.inputWordsPerCall} onChange={(v) => set({ inputWordsPerCall: v })} step={100} />
-          <NumberField label="Output words / LLM call" value={a.outputWordsPerCall} onChange={(v) => set({ outputWordsPerCall: v })} step={50} />
-          <NumberField label="Tokens per word" value={a.tokensPerWord} onChange={(v) => set({ tokensPerWord: v })} step={0.01} hint="≈1.33 for English" />
-          <NumberField label="STT sec billed / min" value={a.sttSecondsPerMin} onChange={(v) => set({ sttSecondsPerMin: v })} max={60} hint="60 = full call streamed" />
-          <NumberField label="TTS sec spoken / min" value={a.ttsSecondsPerMin} onChange={(v) => set({ ttsSecondsPerMin: v })} max={60} />
-          <NumberField label="TTS chars / second" value={a.ttsCharsPerSecond} onChange={(v) => set({ ttsCharsPerSecond: v })} hint="≈15 at a normal pace" />
-          <NumberField label="Avg call length" value={a.callMinutes} onChange={(v) => set({ callMinutes: v })} suffix="min" />
-        </div>
       </Card>
     </div>
   )

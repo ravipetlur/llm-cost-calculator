@@ -46,7 +46,7 @@ export const USE_CASES: UseCase[] = [
   {
     id: 'emi-reminder',
     emoji: '💳',
-    name: 'EMI / collections reminder',
+    name: 'EMI / collections',
     description: 'Short scripted reminder with a payment nudge',
     patch: {
       botTurns: 3,
@@ -76,7 +76,7 @@ export const USE_CASES: UseCase[] = [
   {
     id: 'telecom-support',
     emoji: '📱',
-    name: 'Telecom support (inbound)',
+    name: 'Telecom support',
     description: 'Plan, billing and network issues — long, varied conversations',
     patch: {
       botTurns: 6,
@@ -91,7 +91,7 @@ export const USE_CASES: UseCase[] = [
   {
     id: 'clinic-appointment',
     emoji: '🏥',
-    name: 'Clinic appointment booking',
+    name: 'Clinic appointments',
     description: 'Slot check and confirmation — semi-scripted flow',
     patch: {
       botTurns: 4,

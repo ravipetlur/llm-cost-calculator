@@ -1,7 +1,9 @@
 import { useState } from 'react'
+import { AssumptionsCard } from './components/AssumptionsCard'
 import { ConfigPanel } from './components/ConfigPanel'
 import { Results } from './components/Results'
 import { SettingsPane } from './components/SettingsPane'
+import { UseCaseStrip } from './components/UseCaseStrip'
 import { DEFAULT_SELECTION, LLM_MODELS, PRICING_AS_OF, STT_MODELS, TTS_MODELS } from './data/pricing'
 import { calculate } from './lib/calc'
 import { useStoredState } from './lib/store'
@@ -30,7 +32,7 @@ export default function App() {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
       <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/90 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3.5">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-3.5">
           <div>
             <h1 className="text-lg font-bold tracking-tight">Voice AI Cost Calculator</h1>
             <p className="text-xs text-slate-400">
@@ -54,22 +56,26 @@ export default function App() {
         </div>
       </header>
 
-      <main className="mx-auto grid max-w-6xl gap-6 px-6 py-6 lg:grid-cols-[400px_1fr]">
-        <ConfigPanel
-          llms={llms}
-          stts={stts}
-          ttss={ttss}
-          llmId={llm.id}
-          sttId={stt.id}
-          ttsId={tts.id}
-          onSelect={(kind, id) => setSelection({ ...selection, [kind]: id })}
-          assumptions={assumptions}
-          onAssumptions={setAssumptions}
-        />
-        <Results breakdown={breakdown} llm={llm} stt={stt} tts={tts} assumptions={assumptions} usdInr={usdInr} />
+      <main className="mx-auto max-w-7xl space-y-4 px-6 py-6">
+        <UseCaseStrip assumptions={assumptions} onAssumptions={setAssumptions} />
+        <div className="grid gap-4 lg:grid-cols-[380px_1fr]">
+          <ConfigPanel
+            llms={llms}
+            stts={stts}
+            ttss={ttss}
+            llmId={llm.id}
+            sttId={stt.id}
+            ttsId={tts.id}
+            onSelect={(kind, id) => setSelection({ ...selection, [kind]: id })}
+            assumptions={assumptions}
+            onAssumptions={setAssumptions}
+          />
+          <Results breakdown={breakdown} llm={llm} stt={stt} tts={tts} assumptions={assumptions} usdInr={usdInr} />
+        </div>
+        <AssumptionsCard assumptions={assumptions} onAssumptions={setAssumptions} />
       </main>
 
-      <footer className="mx-auto max-w-6xl px-6 pb-8 text-[11px] text-slate-400">
+      <footer className="mx-auto max-w-7xl px-6 pb-8 text-[11px] text-slate-400">
         Estimates only. All prices are public pay-as-you-go list rates unless overridden in Settings — verify against
         your provider contracts before quoting a customer.
       </footer>
