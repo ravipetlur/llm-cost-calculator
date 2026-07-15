@@ -18,11 +18,14 @@ import type { LLMModel, STTModel, TTSModel } from '../types'
  * Sarvam quotes INR-native prices (kept in notes); USD figures are
  * converted at 95.3 INR/USD (early-July 2026 spot).
  */
-export const PRICING_AS_OF = '2026-07-07'
+export const PRICING_AS_OF = '2026-07-15'
 
 export const LLM_MODELS: LLMModel[] = [
   // OpenAI — https://developers.openai.com/api/docs/pricing
-  { id: 'openai-gpt-5-5', provider: 'OpenAI', name: 'GPT-5.5', inputPerM: 5, outputPerM: 30, cachedInputPerM: 0.5, notes: 'Current flagship', sourceUrl: 'https://developers.openai.com/api/docs/pricing' },
+  { id: 'openai-gpt-5-6-sol', provider: 'OpenAI', name: 'GPT-5.6 Sol', inputPerM: 5, outputPerM: 30, cachedInputPerM: 0.5, notes: 'Current flagship (gpt-5.6 alias); 1M-token context', sourceUrl: 'https://developers.openai.com/api/docs/models/gpt-5.6-sol' },
+  { id: 'openai-gpt-5-6-terra', provider: 'OpenAI', name: 'GPT-5.6 Terra', inputPerM: 2.5, outputPerM: 15, cachedInputPerM: 0.25, notes: 'Mid-tier of the 5.6 family; 1M-token context', sourceUrl: 'https://developers.openai.com/api/docs/models/gpt-5.6-terra' },
+  { id: 'openai-gpt-5-6-luna', provider: 'OpenAI', name: 'GPT-5.6 Luna', inputPerM: 1, outputPerM: 6, cachedInputPerM: 0.1, notes: 'High-volume tier of the 5.6 family; 1M-token context', sourceUrl: 'https://developers.openai.com/api/docs/models/gpt-5.6-luna' },
+  { id: 'openai-gpt-5-5', provider: 'OpenAI', name: 'GPT-5.5', inputPerM: 5, outputPerM: 30, cachedInputPerM: 0.5, notes: 'Superseded as flagship by GPT-5.6 Sol; same rates', sourceUrl: 'https://developers.openai.com/api/docs/pricing' },
   { id: 'openai-gpt-5-5-pro', provider: 'OpenAI', name: 'GPT-5.5 pro', inputPerM: 30, outputPerM: 180, sourceUrl: 'https://developers.openai.com/api/docs/pricing' },
   { id: 'openai-gpt-5-4', provider: 'OpenAI', name: 'GPT-5.4', inputPerM: 2.5, outputPerM: 15, cachedInputPerM: 0.25, sourceUrl: 'https://developers.openai.com/api/docs/pricing' },
   { id: 'openai-gpt-5-4-mini', provider: 'OpenAI', name: 'GPT-5.4 mini', inputPerM: 0.75, outputPerM: 4.5, cachedInputPerM: 0.075, sourceUrl: 'https://developers.openai.com/api/docs/pricing' },
@@ -41,9 +44,9 @@ export const LLM_MODELS: LLMModel[] = [
   { id: 'openai-o3', provider: 'OpenAI', name: 'o3', inputPerM: 2, outputPerM: 8, cachedInputPerM: 0.5, notes: 'API shutdown 2026-12-11', sourceUrl: 'https://developers.openai.com/api/docs/models/o3' },
   { id: 'openai-o3-pro', provider: 'OpenAI', name: 'o3-pro', inputPerM: 20, outputPerM: 80, notes: 'API shutdown 2026-12-11', sourceUrl: 'https://developers.openai.com/api/docs/models/o3-pro' },
   { id: 'openai-o4-mini', provider: 'OpenAI', name: 'o4-mini', inputPerM: 1.1, outputPerM: 4.4, cachedInputPerM: 0.275, notes: 'API shutdown 2026-10-23', sourceUrl: 'https://developers.openai.com/api/docs/models/o4-mini' },
-  { id: 'openai-o3-deep-research', provider: 'OpenAI', name: 'o3-deep-research', inputPerM: 10, outputPerM: 40, cachedInputPerM: 2.5, notes: 'Deep-research model', sourceUrl: 'https://developers.openai.com/api/docs/models/o3-deep-research' },
-  { id: 'openai-o4-mini-deep-research', provider: 'OpenAI', name: 'o4-mini-deep-research', inputPerM: 2, outputPerM: 8, cachedInputPerM: 0.5, notes: 'Deep-research model', sourceUrl: 'https://developers.openai.com/api/docs/models/o4-mini-deep-research' },
-  { id: 'openai-computer-use-preview', provider: 'OpenAI', name: 'computer-use-preview', inputPerM: 3, outputPerM: 12, preview: true, notes: 'Computer-use agent model', sourceUrl: 'https://developers.openai.com/api/docs/models/computer-use-preview' },
+  { id: 'openai-o3-deep-research', provider: 'OpenAI', name: 'o3-deep-research', inputPerM: 10, outputPerM: 40, cachedInputPerM: 2.5, notes: 'Deep-research model; API shutdown 2026-07-23', sourceUrl: 'https://developers.openai.com/api/docs/models/o3-deep-research' },
+  { id: 'openai-o4-mini-deep-research', provider: 'OpenAI', name: 'o4-mini-deep-research', inputPerM: 2, outputPerM: 8, cachedInputPerM: 0.5, notes: 'Deep-research model; API shutdown 2026-07-23', sourceUrl: 'https://developers.openai.com/api/docs/models/o4-mini-deep-research' },
+  { id: 'openai-computer-use-preview', provider: 'OpenAI', name: 'computer-use-preview', inputPerM: 3, outputPerM: 12, preview: true, notes: 'Computer-use agent model; API shutdown 2026-07-23', sourceUrl: 'https://developers.openai.com/api/docs/models/computer-use-preview' },
 
   // Google Gemini — https://ai.google.dev/gemini-api/docs/pricing (paid tier, text; base ≤200k tier)
   { id: 'google-gemini-3-5-flash', provider: 'Google Gemini', name: 'Gemini 3.5 Flash', inputPerM: 1.5, outputPerM: 9, cachedInputPerM: 0.15, sourceUrl: 'https://ai.google.dev/gemini-api/docs/pricing' },
@@ -97,9 +100,13 @@ export const STT_MODELS: STTModel[] = [
 
   // Sarvam AI — endpoint-priced ₹30/hr regardless of model; billed per second
   { id: 'sarvam-saaras-v3', provider: 'Sarvam', name: 'Saaras v3 (STT)', perMinute: 0.0052, notes: '₹30/hr billed per second; same price for streaming and batch', sourceUrl: 'https://www.sarvam.ai/api-pricing' },
-  { id: 'sarvam-saarika-v2-5', provider: 'Sarvam', name: 'Saarika v2.5 (STT, legacy)', perMinute: 0.0052, notes: '₹30/hr; same endpoint price as Saaras v3', sourceUrl: 'https://docs.sarvam.ai/api-reference-docs/speech-to-text/transcribe' },
+  { id: 'sarvam-saarika-v2-5', provider: 'Sarvam', name: 'Saarika v2.5 (STT, legacy)', perMinute: 0.0052, notes: '₹30/hr; deprecation announced — Sarvam recommends Saaras v3', sourceUrl: 'https://docs.sarvam.ai/api-reference-docs/speech-to-text/transcribe' },
   { id: 'sarvam-stt-diarization', provider: 'Sarvam', name: 'STT + Diarization', perMinute: 0.0079, notes: '₹45/hr (+₹15/hr for speaker identification)', sourceUrl: 'https://www.sarvam.ai/api-pricing' },
-  { id: 'sarvam-saaras-translate', provider: 'Sarvam', name: 'Saaras STT-translate', perMinute: 0.0052, notes: '₹30/hr; transcribe + translate in one call', sourceUrl: 'https://www.sarvam.ai/api-pricing' },
+  { id: 'sarvam-saaras-translate', provider: 'Sarvam', name: 'Saaras STT-translate', perMinute: 0.0052, notes: '₹30/hr; transcribe + translate in one call; ₹45/hr with diarization', sourceUrl: 'https://www.sarvam.ai/api-pricing' },
+
+  // Soniox — token-billed; per-minute derived from Soniox's published conversions (30k audio-in + 15k text-out tokens/hr)
+  { id: 'soniox-stt-rt-v5', provider: 'Soniox', name: 'stt-rt-v5 (real-time streaming)', perMinute: 0.002, notes: '$0.12/hr exact; diarization, language ID and 60+ language translation bundled', sourceUrl: 'https://soniox.com/pricing' },
+  { id: 'soniox-stt-async-v5', provider: 'Soniox', name: 'stt-async-v5 (batch/file)', perMinute: 0.00163, notes: '$0.0975/hr exact (~$0.10 headline); diarization and translation included', sourceUrl: 'https://soniox.com/pricing' },
 ]
 
 export const TTS_MODELS: TTSModel[] = [
@@ -108,8 +115,8 @@ export const TTS_MODELS: TTSModel[] = [
   { id: 'azure-neural-hd', provider: 'Azure', name: 'Azure Neural HD TTS', per1kChars: 0.022, notes: '$22/1M chars, East US (cut from $30 in Mar 2026)', sourceUrl: 'https://azure.microsoft.com/en-us/pricing/details/speech/' },
 
   // ElevenLabs — direct API usage-based rates
-  { id: 'elevenlabs-flash', provider: 'ElevenLabs', name: 'ElevenLabs Flash / Turbo', per1kChars: 0.05, notes: 'Direct API usage-based rate; Business-plan effective ≈$0.0825/1k', sourceUrl: 'https://elevenlabs.io/pricing/api' },
-  { id: 'elevenlabs-multilingual', provider: 'ElevenLabs', name: 'ElevenLabs Multilingual v2/v3', per1kChars: 0.1, notes: 'Direct API usage-based rate; Business-plan effective ≈$0.165/1k', sourceUrl: 'https://elevenlabs.io/pricing/api' },
+  { id: 'elevenlabs-flash', provider: 'ElevenLabs', name: 'ElevenLabs Flash / Turbo', per1kChars: 0.05, notes: 'Flat $0.05/1k API rate at every plan tier (billed in USD, not credits)', sourceUrl: 'https://elevenlabs.io/pricing/api' },
+  { id: 'elevenlabs-multilingual', provider: 'ElevenLabs', name: 'ElevenLabs Multilingual v2/v3', per1kChars: 0.1, notes: 'Flat $0.10/1k API rate at every plan tier; Eleven v3 same rate', sourceUrl: 'https://elevenlabs.io/pricing/api' },
 
   // Cartesia — effective Scale-plan rates (1 credit/char)
   { id: 'cartesia-sonic', provider: 'Cartesia', name: 'Cartesia Sonic 3.5', per1kChars: 0.0374, notes: 'Scale plan effective rate ($299/mo ÷ 8M credits); Pro $0.05/1k', sourceUrl: 'https://www.cartesia.ai/pricing' },
@@ -121,6 +128,7 @@ export const TTS_MODELS: TTSModel[] = [
   { id: 'google-gemini-2-5-flash-tts', provider: 'Google Gemini', name: 'Gemini 2.5 Flash TTS', per1kChars: 0.0168, preview: true, notes: 'Derived: $0.50/1M text-in + $10/1M audio-out tokens', sourceUrl: 'https://ai.google.dev/gemini-api/docs/pricing' },
   { id: 'google-gemini-2-5-flash-lite-tts', provider: 'Google Gemini', name: 'Gemini 2.5 Flash-Lite TTS', per1kChars: 0.0168, preview: true, notes: 'Same token rates as 2.5 Flash TTS', sourceUrl: 'https://cloud.google.com/text-to-speech/pricing' },
   { id: 'google-gemini-2-5-flash-native-audio', provider: 'Google Gemini', name: 'Gemini 2.5 Flash Native Audio (Live)', per1kChars: 0.0201, preview: true, notes: 'Conversational Live API model, not batch TTS; $12/1M audio-out tokens', sourceUrl: 'https://ai.google.dev/gemini-api/docs/pricing' },
+  { id: 'google-gemini-3-1-flash-live', provider: 'Google Gemini', name: 'Gemini 3.1 Flash Live', per1kChars: 0.0202, preview: true, notes: 'Conversational Live API model; $0.75/1M text-in + $12/1M audio-out tokens', sourceUrl: 'https://ai.google.dev/gemini-api/docs/pricing' },
 
   // Google Cloud Text-to-Speech — per-character billing
   { id: 'google-cloud-tts-chirp3-hd', provider: 'Google Cloud', name: 'Chirp 3: HD voices', per1kChars: 0.03, notes: '$30/1M chars; free tier 1M chars/mo; current flagship voice line', sourceUrl: 'https://cloud.google.com/text-to-speech/pricing' },
@@ -134,6 +142,9 @@ export const TTS_MODELS: TTSModel[] = [
   // Sarvam AI — INR-native, converted at 95.3
   { id: 'sarvam-bulbul-v2', provider: 'Sarvam', name: 'Bulbul v2', per1kChars: 0.0157, notes: '₹15/10k chars; REST + WebSocket streaming at the same price', sourceUrl: 'https://www.sarvam.ai/api-pricing' },
   { id: 'sarvam-bulbul-v3', provider: 'Sarvam', name: 'Bulbul v3', per1kChars: 0.0315, preview: true, notes: '₹30/10k chars, beta pricing; 11 Indian languages', sourceUrl: 'https://docs.sarvam.ai/api-reference-docs/pricing' },
+
+  // Soniox — token-billed; derived at Soniox's own conversions (1 char ≈ 0.3 text tokens, 1k chars ≈ 600 audio-out tokens)
+  { id: 'soniox-tts-rt-v1', provider: 'Soniox', name: 'tts-rt-v1 (real-time)', per1kChars: 0.0141, notes: 'Derived: $4/1M text-in + $21.50/1M audio-out tokens (~$0.70/hr of speech); 60+ languages', sourceUrl: 'https://soniox.com/pricing' },
 ]
 
 export const DEFAULT_SELECTION = {
