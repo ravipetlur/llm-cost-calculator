@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 
-const PREFIX = 'voice-cost-calc:'
+export const STORE_PREFIX = 'voice-cost-calc:'
+const PREFIX = STORE_PREFIX
 
 function isPlainObject(v: unknown): v is Record<string, unknown> {
   return typeof v === 'object' && v !== null && !Array.isArray(v)

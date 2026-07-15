@@ -6,6 +6,7 @@ import { SettingsPane } from './components/SettingsPane'
 import { UseCaseStrip } from './components/UseCaseStrip'
 import { DEFAULT_SELECTION, LLM_MODELS, PRICING_AS_OF, STT_MODELS, TTS_MODELS } from './data/pricing'
 import { calculate } from './lib/calc'
+import { buildShareUrl } from './lib/share'
 import { useStoredState } from './lib/store'
 import type { PriceOverrides } from './types'
 import { DEFAULT_ASSUMPTIONS, EMPTY_OVERRIDES } from './types'
@@ -16,6 +17,7 @@ export default function App() {
   const [overrides, setOverrides] = useStoredState<PriceOverrides>('overrides', EMPTY_OVERRIDES)
   const [usdInr, setUsdInr] = useStoredState('usdInr', 95.3)
   const [settingsOpen, setSettingsOpen] = useState(false)
+  const [copied, setCopied] = useState(false)
 
   // migrate the stale pre-July-2026 default FX rate; only touches the old default, not custom values
   useEffect(() => {
@@ -35,6 +37,17 @@ export default function App() {
 
   const breakdown = calculate(llm, stt, tts, assumptions)
 
+  const share = async () => {
+    const url = buildShareUrl({ llmId: llm.id, sttId: stt.id, ttsId: tts.id }, assumptions, usdInr, overrides)
+    try {
+      await navigator.clipboard.writeText(url)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch {
+      window.prompt('Copy this link:', url)
+    }
+  }
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
       <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/90 backdrop-blur">
@@ -45,10 +58,39 @@ export default function App() {
               Per-minute cost of a voice bot call · list prices as of {PRICING_AS_OF}
             </p>
           </div>
-          <button
-            onClick={() => setSettingsOpen(true)}
-            className="flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50"
-          >
+          <div className="flex items-center gap-2">
+            <button
+              onClick={share}
+              className={`flex items-center gap-2 rounded-lg border px-3.5 py-2 text-sm font-medium shadow-sm transition-colors ${
+                copied
+                  ? 'border-emerald-300 bg-emerald-50 text-emerald-700'
+                  : 'border-slate-300 bg-white text-slate-700 hover:bg-slate-50'
+              }`}
+            >
+              {copied ? (
+                <>
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                  </svg>
+                  Link copied
+                </>
+              ) : (
+                <>
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244"
+                    />
+                  </svg>
+                  Share
+                </>
+              )}
+            </button>
+            <button
+              onClick={() => setSettingsOpen(true)}
+              className="flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50"
+            >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
               <path
                 strokeLinecap="round"
@@ -57,8 +99,9 @@ export default function App() {
               />
               <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
             </svg>
-            Settings
-          </button>
+              Settings
+            </button>
+          </div>
         </div>
       </header>
 

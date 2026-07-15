@@ -36,6 +36,10 @@ Every assumption is editable in the **Call assumptions** panel. The headline sho
 
 Default list prices live in [src/data/pricing.ts](src/data/pricing.ts) with source URLs and an as-of date. Use the **Settings** pane (gear icon) to override any rate with contracted/enterprise pricing — overrides persist in localStorage and show a `custom` badge; reset per row or all at once.
 
+## Sharing
+
+The **Share** button copies a link that reproduces your exact view — providers, all assumptions, the FX rate, and any custom price overrides (encoded in the URL fragment, so nothing is sent to a server). Opening a shared link applies the sender's state; shared overrides merge over the recipient's own, sender's values winning per model, so the recipient sees the sender's numbers without losing unrelated custom rates.
+
 ## Stack
 
 Vite + React + TypeScript + Tailwind CSS. Fully client-side — no backend, no API keys, nothing leaves the browser.
